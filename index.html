@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아마란스 그룹웨어 가이드</title>
+<style>
+  :root{
+    --bg: #F5F6F8;
+    --surface: #FFFFFF;
+    --navy: #16233D;
+    --navy-soft: #2C3B5C;
+    --ink: #1E2430;
+    --muted: #6B7280;
+    --line: #E4E7ED;
+    --gold: #B8860B;
+    --gold-soft: #F4E9CE;
+    --warn: #A3384A;
+    --warn-soft: #FBE9EC;
+    --good: #276749;
+    --good-soft: #E6F4EC;
+    --teal: #1F6F78;
+    --teal-soft: #E3F1F1;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', 'Segoe UI', Pretendard, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; font-size:15px; }
+  a{color:inherit;}
+  .layout{ display:flex; max-width:1360px; margin:0 auto; min-height:100vh; }
+
+  .sidebar{ width:270px; flex-shrink:0; padding:32px 20px 40px; position:sticky; top:0; height:100vh; overflow-y:auto; border-right:1px solid var(--line); }
+  .brand{ display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .brand-mark{ width:34px; height:34px; border-radius:8px; background:#FFFFFF; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; padding:5px; flex-shrink:0; }
+  .brand-mark img{ width:100%; height:100%; object-fit:contain; display:block; }
+  .brand-name{ font-weight:700; font-size:15px; color:var(--navy); }
+  .brand-sub{ font-size:11.5px; color:var(--muted); margin:2px 0 26px 44px; }
+  .nav-group{ margin-bottom:20px; }
+  .nav-label{ font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin:0 0 8px 4px; display:flex; align-items:center; gap:6px;}
+  .nav-label .dot{ width:7px; height:7px; border-radius:50%; }
+  .nav-link{ display:block; padding:6px 10px; border-radius:7px; font-size:13.3px; color:var(--navy-soft); text-decoration:none; margin-bottom:1px; }
+  .nav-link:hover{ background:var(--gold-soft); color:var(--navy); }
+  .nav-link.sub{ font-size:12.2px; color:var(--muted); padding-left:20px; }
+
+  .main{ flex:1; min-width:0; padding:0 0 80px; }
+  .hero{ background:linear-gradient(150deg, var(--navy) 0%, #23345A 60%, var(--navy) 100%); color:#fff; padding:50px 56px 40px; position:relative; overflow:hidden; }
+  .hero::after{ content:""; position:absolute; right:-60px; top:-60px; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle, rgba(184,134,11,0.25), transparent 70%); }
+  .eyebrow{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold-soft); background:rgba(184,134,11,0.18); border:1px solid rgba(184,134,11,0.4); padding:5px 12px; border-radius:100px; margin-bottom:18px; }
+  .hero h1{ font-size:30px; margin:0 0 10px; font-weight:800; letter-spacing:-0.5px; }
+  .hero p.lead{ margin:0; font-size:14px; color:#C9D2E3; max-width:660px; }
+  .review-note{ margin-top:20px; display:flex; gap:10px; align-items:flex-start; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.16); padding:12px 16px; border-radius:10px; font-size:12.3px; color:#D8DEEA; max-width:660px; }
+
+  .cat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:28px 56px 8px; }
+  .cat-card{ text-decoration:none; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px; transition:border-color .15s, transform .15s; }
+  .cat-card:hover{ border-color:var(--gold); transform:translateY(-2px); }
+  .cat-card .icon{ width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:16px; margin-bottom:10px; }
+  .cat-card .ttl{ font-size:14.5px; font-weight:700; color:var(--navy); }
+  .cat-card .dd{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.5; }
+
+  section.block{ padding:40px 56px 8px; scroll-margin-top:20px; }
+  section.category-title{ padding:48px 56px 0; scroll-margin-top:10px; }
+  .category-title h2{ font-size:24px; font-weight:800; margin:0 0 4px; display:flex; align-items:center; gap:12px; }
+  .category-title .pill{ font-size:11px; font-weight:700; padding:4px 12px; border-radius:100px; }
+  .category-title p{ font-size:13.5px; color:var(--muted); margin:6px 0 20px; }
+  hr.sep{ border:none; border-top:1px solid var(--line); margin:12px 56px 0; }
+
+  section.block h2{ font-size:20px; font-weight:800; color:var(--navy); margin:0 0 6px; display:flex; align-items:center; gap:10px; }
+  section.block h2 .num{ font-family:var(--mono); font-size:12.5px; font-weight:700; color:var(--gold); background:var(--gold-soft); border-radius:6px; padding:3px 8px; }
+  section.block > .desc{ font-size:13.3px; color:var(--muted); margin:0 0 18px; }
+
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:16px; }
+  .card h3{ font-size:15px; margin:0 0 10px; color:var(--navy); font-weight:700; }
+  ul.clean{ margin:0; padding-left:18px; }
+  ul.clean li{ margin-bottom:7px; font-size:13.6px; }
+  ul.clean li::marker{ color:var(--gold); }
+
+  .callout{ border-radius:10px; padding:13px 15px; font-size:13px; margin:12px 0; display:flex; gap:10px; }
+  .callout.warn{ background:var(--warn-soft); color:#7A2836; border:1px solid #F0C6CE; }
+  .callout.good{ background:var(--good-soft); color:#1F5138; border:1px solid #C6E6D3; }
+  .callout.info{ background:var(--teal-soft); color:#124349; border:1px solid #BEE0E2; }
+  .callout .icon{ font-weight:800; flex-shrink:0; }
+
+  table{ width:100%; border-collapse:collapse; font-size:12.9px; margin:10px 0; }
+  th{ background:#F0F2F6; color:var(--navy); font-weight:700; text-align:left; padding:8px 10px; border:1px solid var(--line); }
+  td{ padding:8px 10px; border:1px solid var(--line); vertical-align:top; }
+  tr:nth-child(even) td{ background:#FAFBFC; }
+
+  .badge{ display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; }
+  .badge.pos{ background:var(--good-soft); color:var(--good); }
+  .badge.neg{ background:var(--warn-soft); color:var(--warn); }
+
+  details.step{ border:1px solid var(--line); border-radius:10px; margin-bottom:10px; background:var(--surface); }
+  details.step > summary{ list-style:none; cursor:pointer; padding:13px 18px; font-weight:700; font-size:13.8px; color:var(--navy); display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  details.step > summary::-webkit-details-marker{ display:none; }
+  details.step > summary::after{ content:"펼치기"; flex-shrink:0; font-size:11.3px; font-weight:700; color:var(--gold); background:var(--gold-soft); padding:3px 10px; border-radius:100px; }
+  details.step[open] > summary::after{ content:"접기"; }
+  details.step .step-body{ padding:0 20px 18px; font-size:13.3px; }
+  details.step ol{ padding-left:18px; margin:6px 0; }
+  details.step ol li{ margin-bottom:8px; }
+  details.step code{ background:#F0F2F6; padding:1px 6px; border-radius:5px; font-family:var(--mono); font-size:11.8px; }
+  code.inl{ background:#F0F2F6; padding:1px 6px; border-radius:5px; font-family:var(--mono); font-size:11.8px; }
+
+  .doc-nav{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:6px; }
+  .doc-nav a{ text-decoration:none; display:block; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 16px 14px; transition:border-color .15s; }
+  .doc-nav a:hover{ border-color:var(--gold); }
+  .doc-nav .idx{ font-family:var(--mono); font-size:12px; color:var(--gold); font-weight:700; }
+  .doc-nav .ttl{ font-size:13.5px; font-weight:700; color:var(--navy); margin-top:4px; }
+  .doc-nav .dd{ font-size:11.6px; color:var(--muted); margin-top:4px; }
+
+  .term-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .term-card{ border-left:3px solid var(--gold); background:#FBF8F1; border-radius:0 8px 8px 0; padding:10px 14px; }
+  .term-card .term{ font-weight:700; color:var(--navy); font-size:13.5px; margin-bottom:4px; }
+  .term-card .def{ font-size:12.5px; color:var(--ink); }
+
+  footer{ padding:36px 56px 60px; color:var(--muted); font-size:12px; border-top:1px solid var(--line); margin-top:30px; }
+
+  @media (max-width: 900px){
+    .layout{ flex-direction:column; }
+    .sidebar{ width:100%; height:auto; position:relative; border-right:none; border-bottom:1px solid var(--line); }
+    .cat-grid{ grid-template-columns:1fr 1fr; }
+    .doc-nav, .term-grid{ grid-template-columns:1fr; }
+    .hero, section.block, section.category-title, footer{ padding-left:22px; padding-right:22px; }
+    hr.sep{ margin-left:22px; margin-right:22px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><img src="data:image/png;base64,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" alt="F&L Corp."></div>
+      <div class="brand-name">F&amp;L Corporation</div>
+    </div>
+    <div class="brand-sub">그룹웨어(Amaranth 10) 가이드</div>
+
+    <div class="nav-group">
+      <div class="nav-label"><span class="dot" style="background:var(--navy);"></span>개요</div>
+      <a class="nav-link" href="#overview">한눈에 보기</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label"><span class="dot" style="background:var(--teal);"></span>전자결재 기본</div>
+      <a class="nav-link" href="#gw-access">접속 &amp; 기본정보 세팅</a>
+      <a class="nav-link" href="#gw-terms">전자결재 용어 정리</a>
+      <a class="nav-link" href="#gw-write">결재 문서 작성</a>
+      <a class="nav-link" href="#gw-route">결재 경로</a>
+      <a class="nav-link" href="#gw-process">결재 처리</a>
+      <a class="nav-link" href="#gw-time">결재 소요시간 &amp; 기한</a>
+      <a class="nav-link" href="#gw-duty">기안자·결재자 의무</a>
+      <a class="nav-link" href="#gw-tips">사용 팁</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label"><span class="dot" style="background:var(--gold);"></span>자금집행 (지출결의서)</div>
+      <a class="nav-link" href="#fin-overview">한눈에 보기</a>
+      <a class="nav-link" href="#fin-schedule">정기결제일 &amp; 유의사항</a>
+      <a class="nav-link" href="#doc1">1. 기안서(지출품의서)</a>
+      <a class="nav-link" href="#doc2">2. 지출결의서(일반)</a>
+      <a class="nav-link" href="#doc3">3. 지출결의서(법인카드)</a>
+      <a class="nav-link" href="#doc4">4. 지출결의서(외화)</a>
+      <a class="nav-link" href="#doc5">5. 세금계산서 발급 신청서</a>
+      <a class="nav-link" href="#project-code">6. 프로젝트 코드 기준</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label"><span class="dot" style="background:#7A5FBE;"></span>근태관리</div>
+      <a class="nav-link" href="#att-clock">출/퇴근</a>
+      <a class="nav-link" href="#att-request">근태신청서</a>
+      <a class="nav-link" href="#att-swap">대체휴가 · 근무변경</a>
+      <a class="nav-link" href="#att-cancel">근태신청취소</a>
+      <a class="nav-link" href="#att-annual">연차 · 복지휴가</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label"><span class="dot" style="background:#C46A3E;"></span>인사 · 급여</div>
+      <a class="nav-link" href="#hr-cert">증명서 신청</a>
+      <a class="nav-link" href="#hr-pay">급여명세서</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <div class="hero">
+      <div class="eyebrow">● Amaranth 10 그룹웨어 통합 가이드 · 2026.08 기준</div>
+      <h1>아마란스 그룹웨어 가이드</h1>
+      <p class="lead">전자결재 기본기부터 지출결의서, 근태관리, 인사·급여까지 — 그룹웨어에서 자주 쓰는 업무를 한 페이지로 정리했습니다.</p>
+      <div class="review-note">
+        <span>⚠️</span>
+        <span>본 페이지는 사내 노션 가이드 2건("아마란스 지출관련 가이드", "Amaranth 10 전자결재 사용 안내")을 AI로 요약·통합한 문서입니다. 실제 업무 전 <strong>담당 부서(FA팀·HR&amp;GA팀) 및 원본 노션 페이지</strong>에서 최신 내용을 확인해 주세요. 로그인 정보(초기 비밀번호 등)와 담당자 실명이 포함된 결재라인표·인사정보는 보안상 이 문서에 포함하지 않았습니다.</span>
+      </div>
+    </div>
+
+    <div class="cat-grid" id="overview">
+      <a class="cat-card" href="#gw-access">
+        <div class="icon" style="background:var(--teal-soft); color:var(--teal);">①</div>
+        <div class="ttl">전자결재 기본</div>
+        <div class="dd">접속, 용어, 문서 작성, 결재 경로·소요시간</div>
+      </a>
+      <a class="cat-card" href="#fin-overview">
+        <div class="icon" style="background:var(--gold-soft); color:var(--gold);">②</div>
+        <div class="ttl">자금집행 (지출결의서)</div>
+        <div class="dd">정기결제일, 기안서·지출결의서·법인카드</div>
+      </a>
+      <a class="cat-card" href="#att-clock">
+        <div class="icon" style="background:#EFEBFA; color:#7A5FBE;">③</div>
+        <div class="ttl">근태관리</div>
+        <div class="dd">출퇴근, 휴가·근무변경 신청, 연차·복지휴가</div>
+      </a>
+      <a class="cat-card" href="#hr-cert">
+        <div class="icon" style="background:#FBEEE5; color:#C46A3E;">④</div>
+        <div class="ttl">인사 · 급여</div>
+        <div class="dd">증명서 발급, 급여명세서 조회</div>
+      </a>
+    </div>
+
+    <!-- =========================================================
+         CATEGORY 1. 전자결재 기본
+    ========================================================== -->
+    <section class="category-title" id="gw-access-title">
+      <h2><span class="pill" style="background:var(--teal-soft); color:var(--teal);">전자결재 기본</span></h2>
+      <p>그룹웨어 접속부터 결재 상신·처리까지, 전자결재를 쓰기 전에 알아야 할 내용입니다.</p>
+    </section>
+    <hr class="sep">
+
+    <section class="block" id="gw-access">
+      <h2><span class="num">01</span>접속 &amp; 기본정보 세팅</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>웹브라우저에서 Amaranth 10 포털 접속 (URL: <code class="inl">gw.fnlcorp.kr</code>)</li>
+          <li>사용자 ID와 비밀번호 입력하여 로그인 — ID는 사내 이메일 계정의 <code class="inl">@</code> 앞부분 형식입니다.</li>
+          <li>최초 접속 후 비밀번호 변경 가능</li>
+          <li>PC 메신저로 우측 상단 <strong>더보기(점 3개) → 다운로드 센터</strong>에서 Amaranth 10 PC 메신저 다운로드 가능</li>
+        </ul>
+        <div class="callout warn"><span class="icon">🔒</span><span>초기 로그인 계정 형식과 초기 비밀번호는 보안상 본 문서에 포함하지 않았습니다. 신규 입사자는 <strong>HR&amp;GA팀</strong>에 문의해 안내받으세요.</span></div>
+        <h3 style="margin-top:16px;">프로필(기본정보) 세팅</h3>
+        <ul class="clean">
+          <li>우측 상단 프로필 클릭 → 톱니바퀴 아이콘 → 기본정보수정 클릭 → 우측 상단 '수정' 버튼 클릭</li>
+          <li>프로필 사진은 신규 입사자도 알아볼 수 있도록 <strong>개인 사진</strong>으로 설정 (반려동물 사진 지양)</li>
+          <li>증명사진이나 정식 프로필 사진이 아니어도 무방합니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="gw-terms">
+      <h2><span class="num">02</span>전자결재 용어 정리</h2>
+      <p class="desc">전자결재를 시작하기 전 자주 쓰는 용어입니다.</p>
+      <div class="term-grid">
+        <div class="term-card"><div class="term">기안(상신) · 품의</div><div class="def">업무 담당자(책임자)가 보고를 통해 업무 의사결정을 완료하는 것. '재가(裁可)'로 순화하여 쓰기도 함. 품의는 공손하게 허락받는 상황, 기안은 안건·의견을 제시한다는 뜻.</div></div>
+        <div class="term-card"><div class="term">수신처</div><div class="def">결재 문서를 받아 검토·승인해야 하는 부서. 주된 결재 대상 혹은 담당부서로 내용에 대한 책임과 의사결정 권한을 가짐. (예: 재무 관련 - 재무 팀장, 물류 관련 - 오퍼레이션팀장)</div></div>
+        <div class="term-card"><div class="term">참조자</div><div class="def">결재 문서를 열람만 할 수 있으며 의사결정에는 관여하지 않음. 단순히 내용을 공유받아 참고하는 역할 (유관부서 담당자).</div></div>
+        <div class="term-card"><div class="term">시행자</div><div class="def">결재가 완료된 후 실제 작업을 담당하는 사람. 문서에 명시된 업무 수행 책임을 가짐. (예: 지출 결의서 - 자금담당자, 제품 출고 신청서 - 출고 담당자)</div></div>
+        <div class="term-card"><div class="term">전결</div><div class="def">해당 업무의 전결권자로 보임된 자가 결재문서에 대해 결정을 완료하는 것. 전결권자는 해당 업무의 모든 책임과 권한을 가짐.</div></div>
+        <div class="term-card"><div class="term">합의</div><div class="def">업무 추진 시 관련되는 타 부서 담당자에 대한 동의 과정.</div></div>
+        <div class="term-card"><div class="term">거부(반려)</div><div class="def">결재권자가 문서 내용이 충분하지 않거나 동의하지 않아 기안자에게 돌려보내는 것.</div></div>
+        <div class="term-card"><div class="term">미결 / 보류</div><div class="def">미결: 아직 결재를 하지 않은 경우. 보류: 결재자가 의사결정을 잠시 미루는 것.</div></div>
+        <div class="term-card"><div class="term">후결(비활성화)</div><div class="def">결재 후 처리가 끝난 서류를 확인하는 것.</div></div>
+        <div class="term-card"><div class="term">참조(수신참조)</div><div class="def">결재가 진행되는 과정을 알고 있어야 하는 자이며, 결재과정에서 의견을 제시할 수 있음.</div></div>
+        <div class="term-card"><div class="term">공람 / 회람</div><div class="def">결재가 모두 완료된 이후에 문서를 열람할 수 있으며 결재과정에는 참여할 수 없음. 공람(供覽)은 '여러 사람이 보게 한다'는 뜻으로 '돌려 본다'는 의미.</div></div>
+      </div>
+    </section>
+
+    <section class="block" id="gw-write">
+      <h2><span class="num">03</span>결재 문서 작성</h2>
+      <div class="card">
+        <p style="margin:0 0 10px;">전자결재 화면에서 <code class="inl">결재작성</code> 클릭 → 아래 순서로 문서를 완성합니다.</p>
+
+        <h3>① 양식 선택</h3>
+        <table>
+          <tr><th>공통양식</th><th>재무 / 회계</th><th>인사 / 총무</th></tr>
+          <tr><td>기안서</td><td>지출품의서(연동X)</td><td>구매요청서</td></tr>
+          <tr><td>교육신청서</td><td>지출결의서(연동X)</td><td>도서구입신청서</td></tr>
+          <tr><td>업무협조전</td><td>업무경비청구서</td><td>경조비지급신청서</td></tr>
+          <tr><td>교육결과보고서</td><td>지출품의서(연동) — 연동 진행 중</td><td>업무인계인수서</td></tr>
+          <tr><td>보고서</td><td>지출결의서(연동) — 연동 진행 중</td><td>시말서</td></tr>
+          <tr><td>교육결과보고서</td><td>지출결의서(예산) — 연동 진행 중</td><td>사직서</td></tr>
+          <tr><td></td><td></td><td>법인서류사용신청서</td></tr>
+        </table>
+
+        <h3 style="margin-top:16px;">② 문서 제목 작성</h3>
+        <ul class="clean">
+          <li>작성 규칙: <strong>[문서 종류] + 핵심내용 + 세부 정보(선택)</strong></li>
+          <li>예시: <em>[보고] 2025년 01월 월간 실적 보고의 건</em> / <em>[인사] 2025년 조직 개편 인사 발령의 건</em> / <em>[요청] 신규 장비 구매 승인의 건</em></li>
+          <li>"긴급", "검토 요청드립니다" 같은 표현은 제목에 넣지 말고 본문에서 다루기</li>
+          <li>제목은 짧고 간결하게 핵심을 전달할 수 있도록 작성</li>
+        </ul>
+
+        <h3 style="margin-top:16px;">③ 결재선 지정</h3>
+        <ul class="clean">
+          <li>기본 구조: <strong>상위 결재자(결재) → 유관 부서 책임자(합의) → CEO(병렬 결재)</strong></li>
+          <li>병렬 결재 지정 방법: 대표이사 1명 선택 후 '결재' 클릭 → 추가 1명 선택 후 '병렬' 클릭</li>
+        </ul>
+
+        <h3 style="margin-top:16px;">④ 참조문서 / 첨부파일 / 기타 항목</h3>
+        <ul class="clean">
+          <li>지출 결의서 상신 시, <strong>지출 품의서 참조 문서 추가 필수</strong> (총 예산 1,000만원 이상 건)</li>
+          <li>참조문서·첨부파일은 마우스로 파일을 끌어와 등록 가능</li>
+          <li>문서유형(일반문서 등) / 보안등급 / 긴급도 / 보존연한(영구보존 등) / 문서함 항목을 함께 설정</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="gw-route">
+      <h2><span class="num">04</span>결재 경로</h2>
+      <p class="desc">문서 유형에 따라 결재 경로(결재/합의/전결/참조/시행자)가 다르게 설정됩니다. 아래는 대표적인 문서 유형별 흐름 요약입니다.</p>
+      <div class="card">
+        <table>
+          <tr><th>구분</th><th>문서 종류</th><th>결재 경로 특징</th></tr>
+          <tr><td rowspan="3">공통양식</td><td>기안서</td><td>작성 부서장이 정해지지 않은 경우 소속 상사 지정 가능</td></tr>
+          <tr><td>업무협조전</td><td>수신·참조 부서를 지정해 협조 요청</td></tr>
+          <tr><td>보고서</td><td>상위 결재자에게 보고 목적으로 상신</td></tr>
+          <tr><td rowspan="2">재무 / 회계</td><td>지출품의서 / 지출결의서</td><td>1,000만원 이상 여부에 따라 결재 단계·병렬 결재 구성이 달라짐 (FA 전결 조건 포함)</td></tr>
+          <tr><td>업무경비청구서</td><td>사용 부서장 결재 → FA 승인</td></tr>
+          <tr><td rowspan="2">휴가 / 근태</td><td>연차, 반차 등</td><td>본인 → 팀장 승인(팀장은 담당대표), 일괄(반려) 처리 가능</td></tr>
+          <tr><td>경조사 관련</td><td>HR&amp;GA 확인 필요 항목 별도 표시</td></tr>
+          <tr><td rowspan="4">인사 / 총무</td><td>(계)구매요청서</td><td>사용 부서장 결재 → FA/총무 승인</td></tr>
+          <tr><td>도서구입신청서</td><td>사용 부서장 결재 → HR&amp;GA 확인</td></tr>
+          <tr><td>법인서류사용신청서 / 사직서</td><td>부서장 결재 → HR&amp;GA 참조·처리</td></tr>
+          <tr><td>업무인계인수서 / 시말서</td><td>부서장 결재(병렬) → HR&amp;GA 참조</td></tr>
+        </table>
+        <p style="font-size:11.5px; color:var(--muted);">※ 실제 결재 경로 매트릭스(작성자/검토기관/승인부서/합의 등 상세 컬럼)는 시스템 내 문서 작성 화면에서 문서 종류 선택 시 자동으로 적용됩니다. 원본 노션 페이지에는 문서별 상세 매트릭스 표가 이미지로 첨부되어 있으니 세부 조건이 궁금하면 원본을 함께 확인해 주세요.</p>
+      </div>
+    </section>
+
+    <section class="block" id="gw-process">
+      <h2><span class="num">05</span>결재 처리</h2>
+      <div class="card">
+        <ul class="clean">
+          <li><strong>결재 대기 문서(미결 문서) 확인:</strong> 결재자는 '결재 HOME' 화면 또는 '결재수신함-미결문서' 메뉴에서 확인. 상신자는 '상신/보관함-상신문서' 메뉴에서 진행 현황 확인 가능</li>
+          <li><strong>문서 내용 검토:</strong> 결재자는 기안의 본문을 면밀히 검토 후 화면 상단 메뉴로 의사결정</li>
+          <li><strong>승인 / 거부(반려) / 보류 선택</strong></li>
+          <li><strong>의견 작성(필요 시):</strong> 의사결정에 따른 코멘트를 남길 수 있음</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="gw-time">
+      <h2><span class="num">06</span>결재 소요시간 및 기한</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>결재와 합의는 <strong>1인당 영업일 기준 12시간 이내</strong>에 의사결정을 완료해야 합니다.</li>
+          <li>결재/합의자에게 주어진 시간이 경과하기 전까지는 의사결정을 재촉할 수 없습니다.</li>
+          <li>보류의 경우 재검토 시간으로 <strong>12시간이 추가</strong> 부여됩니다.</li>
+          <li>결재 소요시간은 최대 <strong>(결재/합의 인원 × 12시간)</strong> 입니다.</li>
+          <li>최대 시간 외 수정 및 보완 시간을 고려하여, 시간적 여유를 두고 사전에 업무를 진행해야 합니다.</li>
+        </ul>
+        <div class="callout warn"><span class="icon">!</span><span>업무를 미뤄두었다가 한 번에 상신하는 경우, 결재 상황에 따라 업무가 늦어질 수 있습니다.</span></div>
+      </div>
+    </section>
+
+    <section class="block" id="gw-duty">
+      <h2><span class="num">07</span>기안자와 결재자의 의무와 책임</h2>
+      <div class="card">
+        <h3>기안자</h3>
+        <ul class="clean">
+          <li>결재문서 작성 시 해당 내용을 구체적으로 작성해야 합니다.</li>
+          <li>실제 담당자가 결재문서를 작성하여야 하며, 이에 대한 책임을 집니다.</li>
+          <li>의사결정이 필요한 모든 업무는 최종 결재가 완료된 이후에 진행해야 합니다.</li>
+          <li>결재문서 관련 수정 및 보완 의견이 있는 경우 반드시 수정 후 재상신해야 합니다.</li>
+          <li>특이사항이 발생한 경우 반드시 사유와 목적을 작성해야 합니다.</li>
+        </ul>
+        <h3 style="margin-top:14px;">결재자</h3>
+        <ul class="clean">
+          <li>기안자가 상신한 결재문서를 면밀히 검토하여 의사결정을 해야 합니다.</li>
+          <li>결재자는 영업일 기준 12시간 내에 내용을 검토하여 의사결정을 해야 합니다.</li>
+          <li>결재문서에 수정 및 보완이 필요한 경우, 의견을 남겨 기안자가 확인할 수 있도록 합니다.</li>
+          <li>내용에 문제가 있을 경우 해당 내용을 보류 또는 반려할 수 있습니다.</li>
+        </ul>
+        <div class="callout warn" style="margin-top:14px;"><span class="icon">!</span><span><strong>본인의 업무는 반드시 본인이 직접 상신</strong>합니다. 타인의 업무를 대리로 상신하지 않으며, 결재가 완료되기 전 결재를 예상하고 사전에 업무를 진행하는 경우 사안에 따라 징계를 받을 수 있습니다.</span></div>
+      </div>
+    </section>
+
+    <section class="block" id="gw-tips">
+      <h2><span class="num">08</span>전자결재 사용 팁 🚀</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>💡 <strong>신속한 피드백:</strong> 결재 요청을 받으면 가능한 빨리 처리해주세요. 빠른 의사결정이 회사의 성장 속도를 높입니다.</li>
+          <li>🎯 <strong>명확한 설명:</strong> 결재 문서 작성 시 핵심을 간단명료하게 작성해주세요. 불필요한 형식적인 내용은 최소화합니다.</li>
+          <li>🤝 <strong>열린 소통:</strong> 결재 과정에서 궁금한 점이 있다면 메신저나 대면으로 자유롭게 논의해주세요.</li>
+          <li>📱 <strong>모바일 활용:</strong> 이동 중이나 외근 시에도 모바일로 신속하게 결재해주세요.</li>
+          <li>🎨 <strong>창의적 제안:</strong> 기존 양식에 얽매이지 말고, 필요한 경우 새로운 형태의 결재 양식을 제안해주세요.</li>
+        </ul>
+        <div class="callout good" style="margin-top:12px;"><span class="icon">✓</span><span><strong>충분한 협의와 내용 공유:</strong> 업무 진행 시 사전에 결정권자와 유관 부서에 관련 내용을 구두 또는 메일로 공유하고 충분한 협의가 이루어져야 합니다. 여럿의 의견이 필요한 경우는 미팅을 통해 공유해 주세요.</span></div>
+        <div class="callout warn" style="margin-top:10px;"><span class="icon">!</span><span><strong>결재와 보고는 다릅니다.</strong> 결재는 보고를 하는 것이 아닌 결정권자들의 최종 의사결정을 받는 과정입니다. 사전에 공유하지 않은 내용을 상신하지 않도록 해주세요!</span></div>
+        <p style="font-size:12px; color:var(--muted); margin-top:10px;">결재 관련 문의사항이 있으시면 Amaranth10 Q&amp;A 게시판에 내용을 남겨주세요.</p>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CATEGORY 2. 자금집행 (지출결의서)
+    ========================================================== -->
+    <section class="category-title" id="fin-overview-title">
+      <h2><span class="pill" style="background:var(--gold-soft); color:var(--gold);">자금집행 (지출결의서)</span></h2>
+      <p>지출결의서·기안서 작성부터 결제 일정, 프로젝트 코드 분류 기준까지 정리했습니다.</p>
+    </section>
+    <hr class="sep">
+
+    <div class="cat-grid" id="fin-overview" style="padding-top:24px;">
+      <div class="cat-card" style="cursor:default;">
+        <div class="icon" style="background:var(--gold-soft); color:var(--gold);">📅</div>
+        <div class="ttl">정기결제일</div>
+        <div class="dd">매월 10일 단위<br>(10 / 20 / 30·31일)</div>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <div class="icon" style="background:var(--warn-soft); color:var(--warn);">⏰</div>
+        <div class="ttl">지출결의서 마감</div>
+        <div class="dd">정기결제일 전일 (지급당일 제출 시 다음 회차로 이월 가능)</div>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <div class="icon" style="background:var(--good-soft); color:var(--good);">📎</div>
+        <div class="ttl">필수 지출증빙</div>
+        <div class="dd">세금계산서·거래명세서·계좌사본·주민등록증</div>
+      </div>
+      <div class="cat-card" style="cursor:default;">
+        <div class="icon" style="background:var(--teal-soft); color:var(--teal);">✉️</div>
+        <div class="ttl">세금계산서 수취 메일</div>
+        <div class="dd" style="font-family:var(--mono); font-size:12px;">tax@fnlcorp.kr</div>
+      </div>
+    </div>
+
+    <section class="block" id="fin-schedule">
+      <h2>자금집행 안내사항</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>결재 대기시간을 고려해 지급일 <strong>최소 3일 전</strong>까지 지출결의서를 작성합니다.</li>
+          <li>내부결재가 완료되지 않은 문서는 FA팀에서 자금집행을 진행할 수 없습니다.</li>
+          <li>모든 지출결의서에는 검증 가능한 <strong>증빙서류</strong>가 첨부되어야 합니다.</li>
+          <li>내부결재가 완료되었더라도 적격증빙이 불충분하면 결제가 <strong>보류</strong>될 수 있습니다.</li>
+          <li>긴급결제가 필요한 경우 지출결의서 비고란에 사유를 명시합니다 (단, 고객환불 제외).</li>
+          <li>업무활동비(중식대·야근교통비·외근유류대·접대비 등)는 <strong>사전 기안 전결이 필요</strong>합니다.</li>
+        </ul>
+        <div class="callout warn"><span class="icon">!</span><span>지급일이 업무 휴일이면 직전 근무일에 지급되며, 지급당일 제출된 지출결의서는 다음 결제일로 이월될 수 있습니다.</span></div>
+
+        <h3 style="margin-top:20px;">업무활동비 한도 안내 (HR&amp;GA Team)</h3>
+        <p style="font-size:12px; color:var(--muted); margin:-4px 0 10px;">모든 법인카드 사용내역은 말일+3일 기준으로 지출결의서 작성이 필요합니다.</p>
+        <table>
+          <tr><th>구분</th><th>항목</th><th>금액</th><th>결제수단</th><th>비고</th></tr>
+          <tr><td rowspan="5">복리후생비</td><td>중식대</td><td>월 200,000원</td><td>현금 지급</td><td>급여일에 지급</td></tr>
+          <tr><td>중식대(Buddy)</td><td>20,000원</td><td rowspan="3">팀(장) 법인카드</td><td>입사일부터 2주 동안 총 2회 사용 가능</td></tr>
+          <tr><td>중식대(Lunch Day)</td><td>25,000원</td><td>매월 둘째주 수요일 진행 · 점심시간 2시간으로 1시간 연장 · 연장근무신청서 작성 시 제공(연장근무 2시간 + 식사시간 1시간)</td></tr>
+          <tr><td>석식대</td><td>20,000원</td><td>팀별로 분기 1회 사용 가능 · 1시간 단축근무 / 점심회식 시 점심시간 2시간</td></tr>
+          <tr><td>회식비</td><td>50,000원</td><td>팀(장) 법인카드</td><td>1시간 단축근무 / 점심회식 시 점심시간 2시간</td></tr>
+          <tr><td rowspan="4">교통비</td><td>야근(택시)</td><td>50,000원</td><td rowspan="3">팀(장) 법인카드</td><td>사전에 연장근무 신청서 기안 필요(교통비 승인내용 필수)</td></tr>
+          <tr><td>외근(택시)</td><td>30,000원</td><td>오후 11시 이후 퇴근 시 일반택시만 허용(모범/블랙 등 불가)</td></tr>
+          <tr><td>외근(지차)유류대</td><td>실비</td><td>사전에 외근신청서 or 출장신청서 기안 필요(교통비 승인내용 필수)</td></tr>
+          <tr><td>외근(지차)주차비</td><td>20,000원</td><td>주차권 or 팀(장) 법인카드</td><td>-</td></tr>
+          <tr><td rowspan="3">업무추진비</td><td>음료대</td><td>6,000원</td><td rowspan="3">팀(장) 법인카드</td><td>-</td></tr>
+          <tr><td>중식대</td><td>20,000원</td><td>사전에 외근신청서 작성 및 접대비 사용내용 기재 필요(접대비 승인내용 필수)</td></tr>
+          <tr><td>석식대</td><td>30,000원</td><td>-</td></tr>
+        </table>
+        <p style="font-size:11.5px; color:var(--muted);">※ 복리후생비 / 업무추진비 금액은 1인을 기준으로 함. (출처: 사내게시판 &gt; F&amp;L Corp. &gt; 규정 및 가이드, HR&amp;GA Team 게시글)</p>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>지출관련 서류 안내</h2>
+      <p class="desc">지출 목적과 상황에 맞는 서류를 선택하세요. 아래 카드를 클릭하면 상세 항목으로 이동합니다.</p>
+      <div class="doc-nav">
+        <a href="#doc1"><div class="idx">01</div><div class="ttl">기안서 (지출품의서)</div><div class="dd">1,000만원 이상 사전 예산결의</div></a>
+        <a href="#doc2"><div class="idx">02</div><div class="ttl">지출결의서 (일반)</div><div class="dd">거래처 비용 지급 시 필수</div></a>
+        <a href="#doc3"><div class="idx">03</div><div class="ttl">지출결의서 (법인카드)</div><div class="dd">매월 말일 기준 3일 이내 정산</div></a>
+        <a href="#doc4"><div class="idx">04</div><div class="ttl">지출결의서 (외화)</div><div class="dd">별도 온보딩 문서 참고</div></a>
+        <a href="#doc5"><div class="idx">05</div><div class="ttl">세금계산서 발급 신청서</div><div class="dd">발급 요청 시 작성하는 기안서</div></a>
+        <a href="#project-code"><div class="idx">06</div><div class="ttl">프로젝트 코드 기준</div><div class="dd">매출 귀속 기준 코드 선택</div></a>
+      </div>
+    </section>
+
+    <section class="block" id="doc1">
+      <h2><span class="num">01</span>기안서 (지출품의서)</h2>
+      <p class="desc">프로젝트성 업무의 사전 예산결의서입니다. 지출결의서를 대신할 수 없습니다.</p>
+      <div class="card">
+        <ul class="clean">
+          <li>아마란스10 기안서 양식을 사용합니다.</li>
+          <li>총 예산 <strong>1,000만원 이상</strong> 업무 시 작성하며, 지출결의서 증빙으로 첨부합니다.</li>
+          <li>작성기준은 <strong>업무 단위</strong>이며, 해당 업무에 소요되는 총 비용 기준으로 작성합니다.</li>
+          <li>필수 명시 항목: 업무 목적, 일정, 총 견적비용(예상비용), 기대효과</li>
+          <li>작성 예시: 고정자산 구입, 오프라인 팝업·판촉 행사, 국내외 박람회 참가 등</li>
+        </ul>
+        <div class="callout good"><span class="icon">✓</span><span>결재자: <strong>이상훈 대표님, 한송희 대표님 공동 결재</strong> 필요</span></div>
+      </div>
+    </section>
+
+    <section class="block" id="doc2">
+      <h2><span class="num">02</span>지출결의서 (일반)</h2>
+      <p class="desc">거래처 비용 지급 시 필수로 작성하는 문서입니다.</p>
+      <div class="card">
+        <h3>작성 원칙</h3>
+        <ul class="clean">
+          <li>거래처 <strong>합산 작성 불가</strong> — 거래처별로 각각 작성합니다.</li>
+          <li>부서 내부결재가 완료된 문서만 FA팀에 전달되며, 전달된 문서만 지급 처리됩니다.</li>
+          <li>FA팀 결제담당자는 필요 시 문서를 반려하거나 보류할 수 있습니다.</li>
+          <li>세금계산서는 <strong>사전 발행이 원칙</strong>입니다. 거래처 사정상 사후 발행 시, 사후증빙 보완 예정임을 명시하고 <strong>결제일로부터 3일 이내</strong> 지출결의서 댓글란에 첨부합니다.</li>
+          <li>작성된 지출결의서는 회계장부에 자동 연동되므로 용도를 정확히 설정합니다.</li>
+          <li>부서별 관리 대표자 1인 결재 (일부 부서 제외), <strong>건당 5억원 초과 시 대표자 2인 결재</strong> 필요.</li>
+          <li>부서코드는 품목 코드로 분류되며, 매출 귀속 기준에 맞게 선택합니다.</li>
+          <li>맨 아래 프로젝트코드는 입력 기준을 확인 후 상신합니다 (→ <a href="#project-code" style="color:var(--gold);">6. 프로젝트 코드 입력 기준</a> 참고).</li>
+        </ul>
+        <div class="callout warn"><span class="icon">!</span><span><strong>소득신고가 필요한 지출결의서</strong>는 상신 시 합의자에 <strong>HR팀 황대로님을 반드시 추가</strong>해야 합니다 (원천 신고 필수).</span></div>
+        <div class="callout good"><span class="icon">✓</span><span>세금계산서를 <span style="font-family:var(--mono);">tax@fnlcorp.kr</span>로 수취하면 지출결의서에 자동 반영됩니다.</span></div>
+
+        <h3 style="margin-top:20px;">부서코드 (품목군 · 손익센터)</h3>
+        <table>
+          <tr><th>부서 코드</th><th>부서명</th></tr>
+          <tr><td>9000</td><td>▼ 손익센터(제품) ▼</td></tr>
+          <tr><td>9009</td><td>공통비용</td></tr>
+          <tr><td>9110</td><td>단백질 쉐이크</td></tr>
+          <tr><td>9120</td><td>HMR (마녀스프 + 파로죽)</td></tr>
+          <tr><td>9130</td><td>스낵 (단백질바, 곤약팝)</td></tr>
+          <tr><td>9140</td><td>기타 (그래놀라, 알룰로스 등)</td></tr>
+          <tr><td>9210</td><td>클렌즈 (애사비 + 구미, 젤리 + 소다)</td></tr>
+          <tr><td>9220</td><td>이너케어 (그린케어 + 콜라겐)</td></tr>
+          <tr><td>9230</td><td>붓기, 순환 (로우차)</td></tr>
+          <tr><td>9240</td><td>기타 (인앤아웃, 멀티비타민, 차전자피 등)</td></tr>
+          <tr><td>9310</td><td>톤앤스팟</td></tr>
+          <tr><td>9320</td><td>PDRN</td></tr>
+          <tr><td>9330</td><td>아젤라익</td></tr>
+          <tr><td>9340</td><td>기타</td></tr>
+        </table>
+
+        <h3 style="margin-top:20px;">프로젝트 코드 (영업채널 · 매출 귀속)</h3>
+        <table>
+          <tr><th>프로젝트코드</th><th>프로젝트명</th></tr>
+          <tr><td>CN001~CN006</td><td>CN(중국) - B2B/B2C × 플라이밀/라이블링/리덴스</td></tr>
+          <tr><td>FLL1000000</td><td>FLL 공통</td></tr>
+          <tr><td>FNL0000001 / FNL0000002</td><td>F&amp;L 전사 공통 / F&amp;L 김포 공통</td></tr>
+          <tr><td>JP001~JP006</td><td>JP(일본) - B2B/B2C × 플라이밀/라이블링/리덴스</td></tr>
+          <tr><td>KR001~KR006</td><td>KR(국내) - B2B/B2C × 플라이밀/라이블링/리덴스</td></tr>
+          <tr><td>RDC100000</td><td>RDC 공통</td></tr>
+          <tr><td>US001~US006</td><td>US(미국) - B2B/B2C × 플라이밀/라이블링/리덴스</td></tr>
+          <tr><td>기타001~기타006</td><td>기타 - B2B/B2C × 플라이밀/라이블링/리덴스</td></tr>
+        </table>
+        <p style="font-size:11.5px; color:var(--muted);">※ 실제 상신 화면에서는 <code class="inl">프로젝트코드</code> 클릭 시 전체 최신 코드를 확인할 수 있습니다. 위 목록은 확인 시점(2026.08) 기준입니다.</p>
+
+        <h3 style="margin-top:20px;">자주 쓰는 용도 코드</h3>
+        <table>
+          <tr><th>코드</th><th>용도</th><th>사용 내용</th></tr>
+          <tr><td>1022</td><td>복리후생비_식대</td><td>임직원 식비, 음료대</td></tr>
+          <tr><td>1025</td><td>여비교통비_업무교통비</td><td>교통비(외근, 야근)</td></tr>
+          <tr><td>1029</td><td>기업업무추진비_외부인원식사비</td><td>접대비</td></tr>
+          <tr><td>1056</td><td>소모품비_기타</td><td>소모품비(사무용품 포함)</td></tr>
+          <tr><td>1061</td><td>광고선전비_바이럴/PPL</td><td>리뷰참여, 카페바이럴</td></tr>
+          <tr><td>1066</td><td>광고선전비_기타</td><td>광고촬영, 팝업, 경품 상품권</td></tr>
+          <tr><td>1057</td><td>지급수수료_기타</td><td>업무용 수수료</td></tr>
+          <tr><td>1076</td><td>판매수수료_공동구매</td><td>인플루언서 판매수수료</td></tr>
+          <tr><td>1007</td><td>경상연구개발비_플라이밀</td><td>샘플 구입(플라이밀)</td></tr>
+          <tr><td>1008</td><td>경상연구개발비_라이블링</td><td>샘플 구입(라이블링)</td></tr>
+          <tr><td>1009</td><td>경상연구개발비_리덴스</td><td>샘플 구입(리덴스)</td></tr>
+          <tr><td>1010</td><td>포장비_유상품(제조)</td><td>쇼핑백, OPP, 포장용품 구입</td></tr>
+          <tr><td>1006</td><td>부재료_리덴스</td><td>공병, 펌프 등</td></tr>
+          <tr><td>1012~1015</td><td>외주가공비_플라이밀/라이블링/굿즈/리덴스</td><td>생산비 (플라이밀 / 라이블링 / 텀블러·파우치(판매용) / 리덴스)</td></tr>
+        </table>
+
+        <div class="callout warn"><span class="icon">🔒</span><span><strong>팀별 결재라인표</strong>는 담당자 실명이 포함된 인사정보로, 사내 정보보안 정책에 따라 본 요약 매뉴얼에는 포함하지 않았습니다. 최신 결재라인(2026.08.01 기준)은 원본 노션 페이지에서 확인해 주세요.</span></div>
+
+        <details class="step" style="margin-top:16px;">
+          <summary>☆ 세금계산서 연동 시 작성 방법</summary>
+          <div class="step-body">
+            <p style="color:var(--muted); font-size:12.5px;">tax@fnlcorp.kr 로 수취된 세금계산서 기준 작성법입니다.</p>
+            <ol>
+              <li>지출결의서 작성 화면에서 <code>계산서내역</code> 클릭 → 작성일자(=세금계산서 작성일자)로 조회 → 미반영 내역 확인</li>
+              <li>세금계산서 내용에 따라 <strong>용도</strong>를 지정</li>
+              <li>제목 입력 / 관련 증빙 첨부파일 등록 / 지급요청일 설정 / 지급계좌 수기 입력</li>
+              <li><strong>사용부서</strong> = 해당 비용의 품목군, <strong>프로젝트</strong> = 해당 비용의 영업채널 선택</li>
+              <li>한 세금계산서에 2가지 이상 품목군 비용이 섞인 경우, 금액을 나누어 입력 후 계산서 내역에서 잔액을 재선택하여 각각 사용부서·프로젝트를 지정</li>
+              <li>제목 앞부분에 <code>[지출]</code> 또는 <code>[자동이체]</code> 구분 기입</li>
+              <li><strong>회계일자 = 증빙일자</strong> (예: 세금계산서 작성일자 2/1 → 회계일자 2/1)</li>
+              <li>품의서가 있는 경우 참조문서에서 첨부</li>
+              <li>결재라인 설정(팀별 결재라인 참고) 후 상신</li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="step">
+          <summary>☆ 세금계산서 미연동 시 작성 방법</summary>
+          <div class="step-body">
+            <p style="color:var(--muted); font-size:12.5px;">세금계산서·현금영수증이 후발행되거나 일반영수증으로 거래할 때, 또는 tax@fnlcorp.kr로 세금계산서를 미수취한 경우 사용합니다. 별도 수취한 세금계산서는 첨부파일로 증빙합니다.</p>
+            <div class="callout warn"><span class="icon">!</span><span>입력 화면의 <strong>핑크색 박스는 필수 입력란</strong>입니다. 하나라도 누락되면 상신되지 않습니다.</span></div>
+            <ol>
+              <li>지출결의서 제목과 용도 설정 입력 (자주 쓰는 용도 참고, 판단이 어려우면 FA팀 문의)</li>
+              <li>거래처 입력 시 클릭하여 조회 (신규 거래처는 FA팀에 등록 요청, 사업자등록증 필요). 세금계산서가 없는 일반비용 거래처는 거래처명 직접 입력 가능</li>
+              <li>은행은 박스를 클릭하여 선택해야 적용됨. 계좌번호·예금주는 직접 입력 가능</li>
+              <li><strong>사용부서</strong> = 품목군, <strong>프로젝트</strong> = 영업채널 선택 (2개 이상 품목군 혼합 시 금액을 나누어 재입력)</li>
+              <li><strong>회계일자 = 증빙일자</strong></li>
+              <li>필수 입력사항 확인 → 결재라인 설정 → <code>결제상신</code> 클릭</li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="step">
+          <summary>고정 비용 지출결의서 작성 TIP</summary>
+          <div class="step-body">
+            <p>주기적·고정적인 지출은 <strong>문서목록</strong>에서 과거 작성한 지출결의서 내용과 첨부파일을 불러와 재사용할 수 있습니다.</p>
+            <ol>
+              <li>지출결의서 작성 → <code>문서목록</code> 클릭</li>
+              <li>작성목록에서 복사할 지출결의서 선택 → <code>사본만들기</code></li>
+              <li>지출증빙 변경 및 내용 수정 → 결재란 지정 → 상신</li>
+            </ol>
+            <div class="callout warn"><span class="icon">!</span><span>변경된 사항(회계일자·증빙·지급요청일)은 반드시 수정해야 합니다. 증빙과 일치하지 않는 내용은 출금이 불가하니 결재 상신 전 반드시 확인하세요.</span></div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="block" id="doc3">
+      <h2><span class="num">03</span>지출결의서 (법인카드)</h2>
+      <p class="desc">법인카드 사용내역은 매월 말일로부터 <strong>3일 이내</strong> 지출결의서로 정산해야 합니다.</p>
+      <div class="card">
+        <ul class="clean">
+          <li>고위드 시스템에서는 개인사용 내역을 메모로만 기록 가능 — 모든 카드 정산은 반드시 지출결의서로 작성</li>
+          <li>개인 법인카드는 <strong>본인 식대·교통비 용도로만</strong> 사용</li>
+          <li>개인별 일 한도 기본 <strong>1만원</strong>. 여러 명 식대를 한 번에 결제해도 개인비용 처리되므로 반드시 개별 결제</li>
+          <li>법인카드 지출결의서는 대표자 결재 없이 <strong>팀장 전결</strong></li>
+          <li>샘플 구매 등 업무상 결제는 팀별 지정 온라인 결제 카드 사용</li>
+          <li>온라인 정기결제는 <strong>사전품의 필수</strong> — 사전품의서로 대표자 결재 후 FA팀 등록 요청 (미확인 정기결제는 통보 없이 해지될 수 있음)</li>
+          <li>쿠팡·네이버페이·알리페이 등 품목이 불명확한 결제건은 구매 내역을 첨부파일로 첨부</li>
+        </ul>
+      </div>
+
+      <details class="step">
+        <summary>법인카드 지출결의서 작성 방법</summary>
+        <div class="step-body">
+          <div class="callout warn"><span class="icon">!</span><span>회계처리일자는 <strong>말일</strong>로 작성합니다 (예: 10월 사용분 → 10.31일자).</span></div>
+          <ol>
+            <li>제목: <code>○○월 법인카드 (이름)</code></li>
+            <li>지출결의서 작성 → <code>지출결의서(법인카드/공구)</code> 선택 → <code>카드사용내역</code> 클릭</li>
+            <li>본인 소지 카드번호 확인 → 지출일자를 정산월(1일~말일)로 설정 → <code>미반영</code> 클릭 (인턴 식대 결제 팀장은 내용란에 해당자 기재)</li>
+            <li>건별내역 전체 체크박스 선택 → <code>확인</code></li>
+            <li>공급가액·부가세는 카드사 기준 자동 반영. 실제 사용목적에 따라 조정하며, 부가세 미적용 계정은 부가세를 0원으로 입력해 공급가액과 합계액을 일치</li>
+            <li>건별 용도 설정 (자주 쓰는 용도 참고)</li>
+            <li>타사 제품 샘플 구매건은 목적별 용도 구분 (아래 표 참고)</li>
+            <li>거래처명으로 품목 확인이 안 되는 건은 건별 내역에서 첨부파일 추가</li>
+            <li>1개 결제 내역에 2개 이상 품목군이 섞인 경우, 카드사용내역에서 같은 건을 재선택하여 품목군별 금액을 나누어 입력</li>
+            <li>지급요청일은 <strong>당월 말일자</strong>로 입력</li>
+            <li>결재라인: <code>작성자(팀원) → 팀장</code> 또는 <code>작성자(팀장) → 관리대표자 1인</code> (팀장은 상위 결재자 없음)</li>
+            <li><code>상신</code> 클릭으로 작성 완료</li>
+          </ol>
+          <table>
+            <tr><th>구분</th><th>해당 계정</th></tr>
+            <tr><td>부가세 적용 계정</td><td>식음료대, 소모품구입</td></tr>
+            <tr><td>부가세 미적용 계정</td><td>접대비, 유류대, 등기우편비/EMS, 교통비</td></tr>
+          </table>
+          <table>
+            <tr><th>타사 샘플 구매 목적</th><th>용도 분류</th></tr>
+            <tr><td>제품 디자인·패키지·시장조사·벤치마킹용</td><td>경상연구개발비</td></tr>
+            <tr><td>성분·제형 분석 목적</td><td>경상연구개발비(제조)</td></tr>
+            <tr><td>단순 참고용 소액 구매</td><td>소모품비</td></tr>
+            <tr><td>광고 촬영·콘텐츠 제작용 소품</td><td>광고선전비</td></tr>
+          </table>
+        </div>
+      </details>
+    </section>
+
+    <section class="block" id="doc4">
+      <h2><span class="num">04</span>지출결의서 (외화)</h2>
+      <div class="card">
+        <p style="margin:0;">외화 지출결의서 작성법은 별도 온보딩 문서 <strong>「지출결의서(외화)」</strong>에 안내되어 있습니다. 원본 노션 페이지에서 확인해 주세요.</p>
+      </div>
+    </section>
+
+    <section class="block" id="doc5">
+      <h2><span class="num">05</span>기안서 (세금계산서 발급 신청서)</h2>
+      <p class="desc">세금계산서 발급을 요청할 때 작성하는 기안서입니다.</p>
+      <div class="card">
+        <ul class="clean">
+          <li>양식: 공통양식 - 기안서 - 세금계산서 발급 신청서</li>
+          <li>결재자: <strong>FA팀 서해수 단독 지정</strong> (팀 내부결재 불필요) — 결재라인은 발행 여부 확인용이며, 결재 완료는 발행 완료를 의미</li>
+          <li>세금계산서는 요청 업체메일과 TAX메일로 동시 발송</li>
+        </ul>
+        <table>
+          <tr><th>필수 입력사항</th><td>상호명, 발급일자, 사업자번호, 발행 목적, 금액, 전송 메일</td></tr>
+          <tr><th>필수 첨부파일</th><td>업체 사업자등록증, 발행 금액확인용 증빙 (PO, 거래명세표, 구매확인서 등)</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="block" id="project-code">
+      <h2><span class="num">06</span>프로젝트 코드 입력 기준</h2>
+      <p class="desc">정확한 손익관리를 위해 매출 귀속 기준에 따라 프로젝트 코드를 선택합니다.</p>
+      <div class="card">
+        <div class="callout good"><span class="icon">✓</span><span><strong>기본 원칙:</strong> 지출은 '비용이 발생한 원인인 매출'이 속한 프로젝트 코드로 귀속합니다.</span></div>
+        <table>
+          <tr><th>구분</th><th>기준</th></tr>
+          <tr><td>국내 채널 관련 비용</td><td>네이버, 자사몰, 공동구매, 카카오, 쿠팡 등 국내 플랫폼 중심일 경우 해당 채널 선택</td></tr>
+          <tr><td>해외 채널 관련 비용</td><td>아마존, 라쿠텐, Qoo10, 틱톡샵 등 해외 매출 발생 채널 선택</td></tr>
+          <tr><td>공용 마케팅/브랜드 활동</td><td>귀속 매출 채널별로 분할, 또는 브랜드 전체 대상일 경우 FLL 공통 / RDC 공통</td></tr>
+          <tr><td>프로모션/이벤트성 비용</td><td>특정 기간·채널 매출과 직접 연결되는 경우 → 프로모션, 메가와리 등 코드 사용</td></tr>
+        </table>
+        <h3 style="margin-top:18px;">자주 발생하는 오류</h3>
+        <ul class="clean">
+          <li><span class="badge neg">X</span>&nbsp; "채널을 모르겠으니까 일단 공통" → 매출 귀속 기준으로 판단</li>
+          <li><span class="badge neg">X</span>&nbsp; "본사 비용이니까 FLL 공통" → 실제 지출 목적에 따라 해당 채널 코드 사용</li>
+          <li><span class="badge neg">X</span>&nbsp; "광고비니까 다 공통" → 광고가 영향을 주는 매출 채널 기준으로 분할</li>
+        </ul>
+        <div class="callout warn"><span class="icon">!</span><span>코드 선택이 애매한 경우 FA팀에 문의하세요. 전체 프로젝트 코드는 지출결의서 작성 화면의 <code class="inl">프로젝트코드</code> 클릭 시 확인 가능합니다.</span></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CATEGORY 3. 근태관리
+    ========================================================== -->
+    <section class="category-title" id="att-title">
+      <h2><span class="pill" style="background:#EFEBFA; color:#7A5FBE;">근태관리</span></h2>
+      <p>출/퇴근부터 휴가·근무변경 신청, 연차·복지휴가 확인까지 근태 관련 업무를 안내합니다.</p>
+    </section>
+    <hr class="sep">
+
+    <section class="block" id="att-clock" style="padding-top:24px;">
+      <h2>출 / 퇴근 (근무시간 관리)</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>Amaranth 10 <strong>PC 메신저</strong>로 출근/퇴근 버튼을 클릭합니다.</li>
+          <li><strong>모바일 출/퇴근은 불가</strong>하며, PC 메신저로만 가능합니다.</li>
+          <li>PC 메신저는 그룹웨어 우측 상단 더보기(점 3개) → 다운로드 센터에서 다운로드할 수 있습니다.</li>
+        </ul>
+        <h3 style="margin-top:16px;">개인근무시간동의 (임직원업무관리 &gt; 근무시간)</h3>
+        <ul class="clean">
+          <li>본인 근무시간을 확인 후 동의하는 메뉴입니다. 금일 근무시간은 퇴근 후 익일 반영됩니다.</li>
+          <li>매일 본인 근무시간을 확인 후 동의 버튼 혹은 조정신청을 요청할 수 있습니다.</li>
+          <li><strong>개인근무시간현황</strong> 메뉴에서 본인 근무시간현황을 확인할 수 있습니다. 월이 마감되면 본인 한달 근무상태를 체크해 이상 없는지 확인하고, 이상이 있을 경우 조정해서 상태가 전체 승인이 되도록 관리해야 합니다.</li>
+        </ul>
+        <div class="callout warn"><span class="icon">!</span><span>근태 조정 없이 미승인 상태로 누락되는 경우 규제가 강화될 수 있습니다. (예: 성과 평가의 공통 평가 항목 중 근태가 낮은 항목으로 평가될 수 있음) 매월 마감 전 꼭 확인해 주세요.</span></div>
+      </div>
+    </section>
+
+    <section class="block" id="att-request">
+      <h2>근태신청서</h2>
+      <p class="desc">접속경로: [근태관리] - [근태신청] - [근태신청서]</p>
+      <div class="card">
+        <div class="callout info"><span class="icon">ℹ️</span><span><strong>공통사항 — 결재라인 설정:</strong> 결재 1)본인 → 2)팀장 (팀장의 경우 1)본인 → 2)담당대표, 본인 전결 안됨) · 수신 및 참조: HR&amp;GA / 소속부서</span></div>
+      </div>
+    </section>
+
+    <section class="block" id="att-swap">
+      <h2>대체휴가요청서 · 근무변경신청서</h2>
+      <div class="card">
+        <h3>대체휴가요청서</h3>
+        <ul class="clean">
+          <li>사전에 휴일근무 신청서 승인을 받았을 경우에 사용 (연차, 반차 단위로만 신청 가능)</li>
+          <li>승인 받은 휴일 근무일 작성 후 사유 입력</li>
+          <li>연장근무는 대체휴무가 제공되지 않습니다. (단, 연장근무 신청 시 대체휴무 승인 내용을 기재하여 결재된 경우에는 허용)</li>
+        </ul>
+        <h3 style="margin-top:16px;">근무변경신청서</h3>
+        <ul class="clean">
+          <li>파견근무신청서 (일반적으로 사용 X, 사용하게 될 경우 사전 문의)</li>
+          <li>임산부 및 육아기 단축근무 신청서 — 임산부 단축근무 / 육아기 단축근무 신청메뉴 이용</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="att-cancel">
+      <h2>근태신청취소</h2>
+      <div class="card">
+        <ul class="clean">
+          <li>신청된 휴가, 출장, 외근 등의 신청서를 취소신청 가능한 메뉴입니다.</li>
+          <li>가급적 취소신청은 하지 않을 수 있게 사전에 신중하게 신청 부탁드립니다.</li>
+          <li>신청취소 선택 &gt; 신청항목 선택 &gt; 신청취소 버튼 선택 후 문서 작성 후 결재 상신 (사용일시가 지난 문서는 신청 취소할 수 없으며, 문서 삭제 요청으로 신청, 상세 사유 입력 필요)</li>
+          <li>사전에 신청서 작성 시 여러 일자를 같이 신청한 후 하루만 취소할 경우, 일부만 취소 적용되지 않습니다. → 전체 일자 취소 신청 후 재신청 필요</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="att-annual">
+      <h2>연차관리 · 복지휴가</h2>
+      <div class="card">
+        <h3>연차관리</h3>
+        <ul class="clean">
+          <li>개인연차현황: 귀속년도를 선택하여 본인 연차내역을 확인 가능합니다.</li>
+          <li>월별연차사용현황: 본인 연차 사용현황을 월별 캘린더 혹은 리스트 형식으로 확인 가능합니다.</li>
+        </ul>
+        <h3 style="margin-top:16px;">복지휴가</h3>
+        <ul class="clean">
+          <li>개인복지휴가현황: 생일휴가 및 장기근속휴가 등 복지 휴가현황을 확인 가능합니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CATEGORY 4. 인사 · 급여
+    ========================================================== -->
+    <section class="category-title" id="hr-title">
+      <h2><span class="pill" style="background:#FBEEE5; color:#C46A3E;">인사 · 급여</span></h2>
+      <p>증명서 발급 신청과 급여명세서 조회 방법입니다.</p>
+    </section>
+    <hr class="sep">
+
+    <section class="block" id="hr-cert" style="padding-top:24px;">
+      <h2>증명서 신청</h2>
+      <p class="desc">접속경로: 증명서 신청 및 발급 &gt; 증명서신청하기 &gt; 신청할 증명서 선택 후 항목 작성하여 증명서 신청</p>
+      <div class="card">
+        <table>
+          <tr><th>구분</th><th>발급 가능 서류</th></tr>
+          <tr><td>근무경력증명</td><td>재직증명서, 퇴직증명서, 경력증명서</td></tr>
+          <tr><td>소득증명</td><td>근로소득원천징수영수증, 근로소득원천징수부, 납세환급증명</td></tr>
+          <tr><td>기타</td><td>기타 증명서</td></tr>
+        </table>
+        <ul class="clean" style="margin-top:12px;">
+          <li>증명서정보: 증명서구분, 증명서양식, 성명·부서·직책·담당업무(자동 표시), 주민등록번호 표시 여부 선택 가능</li>
+          <li>상세정보: 신청일, 신청매수, 제출처, 제출예정일, 용도(예: 금융기관 제출용), 수령 메일 등을 입력 후 신청</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="block" id="hr-pay">
+      <h2>급여명세서 · 재직증명서 등</h2>
+      <div class="card">
+        <ul class="clean">
+          <li><strong>급여관리(급여명세서):</strong> 본인 급여명세서를 확인할 수 있습니다. (2025년 1월 급여분부터 조회 가능)</li>
+          <li><strong>증명서(재직증명서 등):</strong> 위 '증명서 신청' 메뉴와 동일한 방식으로 근무경력증명(재직증명서 포함)을 신청할 수 있습니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      본 매뉴얼은 사내 노션 페이지 2건("아마란스 지출관련 가이드" 업데이트 2026.07.28, 결재라인표 2026.08.01 / "Amaranth 10 전자결재 사용 안내")을 기반으로 AI가 요약·통합한 문서이며, <strong>담당자 최종 검토 후 사용</strong>을 권장합니다. 부서코드·프로젝트코드·용도코드·업무활동비 한도표·전자결재 용어/절차는 원본 페이지 내용을 직접 확인하여 반영했습니다. 다만 다음 항목은 보안상 이 문서에 포함하지 않았습니다: 그룹웨어 초기 로그인 정보(아이디 형식·비밀번호), 팀별 결재라인표 및 화면 예시 속 담당자 실명 등 인사정보. 해당 내용은 HR&amp;GA팀 또는 원본 노션 페이지에서 확인해 주세요. 세부 절차나 수치가 실제 시스템 화면과 다를 경우 FA팀·HR&amp;GA팀에 문의하시기 바랍니다.
+    </footer>
+
+  </main>
+</div>
+</body>
+</html>
